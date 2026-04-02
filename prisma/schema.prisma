@@ -1,9 +1,28 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"] // Required for the pg adapter you configured!
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String        // Hashed via bcrypt
+  name         String
+  applications Application[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+enum AppStatus {
+  Bookmarked
+  Applied
+  Interview
+  Offer
+  Rejected
 }
 
 model Application {
@@ -11,16 +30,19 @@ model Application {
   companyName     String
   jobTitle        String
   jobUrl          String
-  status          String    // "Bookmarked" | "Applied" | "Interview" | "Offer" | "Rejected"
-  dateApplied     DateTime
+  status          AppStatus @default(Bookmarked)  // "Bookmarked" | "Applied" | "Interview" | "Offer" | "Rejected"
+  dateApplied     DateTime  @default(now())
   contactName     String?
   contactLinkedIn String?
   notes           String?
   followUpDate    DateTime?
   salaryRange     String?
-  matchScore      Int
+  matchScore      Int  //1-10
+  userId          String  // New Relational Fields
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
   @@map("Application") // Ensures Prisma maps to the existing table name
 }
+

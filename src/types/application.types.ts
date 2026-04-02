@@ -11,12 +11,13 @@ export interface Application {
   followUpDate: Date | null;
   salaryRange: string | null;
   matchScore: number; // 1-10
+  userId: string; // Added userId
   createdAt: Date;
   updatedAt: Date;
 }
 
 // ! Pick — Select only specific properties
-export type CreateApplicationDto = Pick<Application, "companyName" | "jobTitle" | "jobUrl" | "status" | "matchScore" | "dateApplied">; 
+export type CreateApplicationDto = Pick<Application, "companyName" | "jobTitle" | "jobUrl" | "status" | "matchScore" | "dateApplied" | "userId">; 
 // ? Omit — Remove specific properties. || Removes only "id" and "createdAt"
-export type UpdateApplicationDto = Partial<Omit<Application, "id" | "createdAt">>; 
+export type UpdateApplicationDto = Partial<Omit<Application, "id" | "createdAt" | "userId">>; 
 // * Partial — Make all properties optional
