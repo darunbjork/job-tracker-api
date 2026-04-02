@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Application {
+  id              String    @id @default(cuid())
+  companyName     String
+  jobTitle        String
+  jobUrl          String
+  status          String    // "Bookmarked" | "Applied" | "Interview" | "Offer" | "Rejected"
+  dateApplied     DateTime
+  contactName     String?
+  contactLinkedIn String?
+  notes           String?
+  followUpDate    DateTime?
+  salaryRange     String?
+  matchScore      Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("Application") // Ensures Prisma maps to the existing table name
+}
