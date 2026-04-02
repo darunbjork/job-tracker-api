@@ -16,7 +16,7 @@ export interface Application {
 }
 
 // ! Pick — Select only specific properties
-export type CreateApplicationDto = Pick<Application, "companyName" | "jobTitle" | "jobUrl" | "status" | "matchScore">; 
+export type CreateApplicationDto = Pick<Application, "companyName" | "jobTitle" | "jobUrl" | "status" | "matchScore" | "dateApplied">; 
 // ? Omit — Remove specific properties. || Removes only "id" and "createdAt"
 export type UpdateApplicationDto = Partial<Omit<Application, "id" | "createdAt">>; 
 // * Partial — Make all properties optional
