@@ -115,3 +115,13 @@ export const prisma = globalForPrisma.prisma || new PrismaClient({
   log: ['query'],
 });
 ```
+
+---
+
+## Authentication Infrastructure Foundation
+```bash
+**What happened:** I integrated a `User` model into our database schema and linked `Application` records to specific users. During this process, a migration error occurred because the new `userId` column in `Application` was mandatory, but existing records lacked this value.
+
+**What I did:** I had to reset the development database using `npx prisma migrate reset` to clear all existing data, which allowed the new `add_user_model` migration to be applied successfully. I also installed essential security libraries (`bcrypt`, `jsonwebtoken`) and updated TypeScript types (`src/types/user.types.ts`, `src/types/application.types.ts`) to reflect the new schema.
+
+**Why I did it:** Resetting the development database was necessary to resolve data conflicts and apply the new schema changes cleanly. These updates provide the foundational database structure and strict typing required for implementing robust authentication and ensuring that users can only access their own job applications, a critical security measure.
