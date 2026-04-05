@@ -17,6 +17,7 @@ const pool = new Pool({
   max: 20,                    // maximum number of connections in the pool
   idleTimeoutMillis: 30000,   // close idle connections after 30 seconds
 });
+console.log("DATABASE_URL seen by application:", process.env.DATABASE_URL);
 
 // ? Listen for unexpected errors on the pool (e.g. network issues) so we can log them
 pool.on('error', (err) => {
