@@ -2,6 +2,16 @@ import 'dotenv/config';
 import { prisma } from '../src/utils/prisma';
 
 async function main() {
+  const user = await prisma.user.upsert({
+    where: { email: 'test@example.com' },
+    update: {},
+    create: {
+      email: 'test@example.com',
+      name: 'Test User',
+      password: 'password123',
+    },
+  });
+
   await prisma.application.create({
     data: {
       companyName: "Spotify",
@@ -11,6 +21,7 @@ async function main() {
       matchScore: 9,
       notes: "Referral from Anders.",
       dateApplied: new Date(),
+      userId: user.id, 
     },
   });
   console.log("Seed data created!");

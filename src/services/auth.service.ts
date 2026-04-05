@@ -6,12 +6,12 @@ import { RegisterDto, LoginDto, AuthResponse, User } from '../types/user.types';
 export class AuthService {
   private generateToken(user: User): string {
     const secret = process.env.JWT_SECRET;
-    if(!secret) throw new Error('JWT_SECRET is not defined in environment variable');
+    if(!secret) throw new Error('JWT_SECRET is not defined in environment variable'); // ? if(!secret) throw new Error(...) // guard clause (or guard condition) //
 
-    // * // Explicitly "use HS256" – it's safer than letting the library guess
+    // * creates a signed JSON Web Token (JWT) containing the payload
     return Jwt.sign({ id: user.id, email: user.email }, secret, {
       expiresIn: '30d',
-      algorithm: 'HS256'
+      algorithm: 'HS256' // * // Explicitly "use HS256" – it's safer than letting the library guess
     });
   }
 

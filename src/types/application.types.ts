@@ -11,7 +11,7 @@ export interface Application {
   followUpDate: Date | null;
   salaryRange: string | null;
   matchScore: number; // 1-10
-  userId: string; // Added userId
+  userId: string; 
   createdAt: Date;
   updatedAt: Date;
 }

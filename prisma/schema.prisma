@@ -1,6 +1,6 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"] // Required for the pg adapter you configured!
+  previewFeatures = ["driverAdapters"] // Required for the pg adapter configured!
 }
 
 datasource db {
@@ -10,7 +10,7 @@ datasource db {
 model User {
   id           String        @id @default(uuid())
   email        String        @unique
-  password     String        // Hashed via bcrypt
+  password     String        
   name         String
   applications Application[]
   createdAt    DateTime      @default(now())

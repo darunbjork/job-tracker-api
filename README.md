@@ -125,3 +125,70 @@ export const prisma = globalForPrisma.prisma || new PrismaClient({
 **What I did:** I had to reset the development database using `npx prisma migrate reset` to clear all existing data, which allowed the new `add_user_model` migration to be applied successfully. I also installed essential security libraries (`bcrypt`, `jsonwebtoken`) and updated TypeScript types (`src/types/user.types.ts`, `src/types/application.types.ts`) to reflect the new schema.
 
 **Why I did it:** Resetting the development database was necessary to resolve data conflicts and apply the new schema changes cleanly. These updates provide the foundational database structure and strict typing required for implementing robust authentication and ensuring that users can only access their own job applications, a critical security measure.
+
+
+
+***
+```bash
+When you call Jwt.sign(), you pass algorithm: 'HS256' to tell the library exactly which cryptographic method to use for signing the token.
+
+Why specify it explicitly?
+
+The library has a default (also HS256), but attackers could try to trick your server by sending a token claiming a different algorithm (e.g., none or RS256). If your server just uses the default, it might accidentally accept a malicious token.
+By forcing HS256, you eliminate that risk. You are saying: "I will only accept tokens signed with this specific algorithm."
+What does HS256 mean?
+
+HS = HMAC (Hash‑based Message Authentication Code) with a shared secret (the same string on both the server that creates the token and the server that verifies it).
+256 = SHA‑256, the hashing function used inside.
+In simple words: It’s like agreeing on a secret handshake and explicitly saying “this is the only handshake we use.” No one can trick you with a different handshake.
+
+
+
+-----------
+```bash
+- **Hashing is one‑way** – you cannot reverse a hash to get the original password.
+
+- **Salt** is random extra data mixed into the password before hashing, so the same password gives different hashes for different users.
+
+- The **cost factor** (10, 12, etc.) controls how slow the hashing is.
+
+- Higher cost = slower = harder for attackers to guess passwords, but also slower for your app. A good balance is usually 10–12.
+
+--------
+
+```bash
+The process is:
+
+Generate a random salt (using bcrypt.genSalt(10)).
+Combine the plain password with the salt.
+Run the combined string through the bcrypt hashing algorithm (one‑way).
+The final stored hash includes the salt, cost factor, and the hash itself.
+So "add salt, then hash" is exactly right.
+
+
+--------------------
+
+```bash
+Final simple summary:
+
+.env → DATABASE_URL = the address + login info
+Singleton file → creates one PrismaClient + one connection pool
+Repository file (this one) → just uses the prisma singleton to run queries
+Real connection → happens automatically inside the pool the first time any query runs
+
+----------------------------------------
+
+Full Flow (super simple): ⭐️⭐️⭐️
+
+.env file
+→ Contains DATABASE_URL (just the address + username + password)
+
+Singleton file (prisma.ts)
+→ Creates one PrismaClient + one connection pool using that URL.
+→ But it does not open the real connection yet.
+
+Repository (your ApplicationRepository)
+→ Just calls methods like prisma.application.create(...)
+
+When a ***route is called*** (e.g. POST /applications or GET /applications)
+→ Repository runs a query → only then the real connection to the database is opened using the pool from the singleton.
