@@ -1,4 +1,9 @@
 # Job Tracker API
+<img width="1440" height="900" alt="Screenshot 2026-04-06 at 14 05 54" src="https://github.com/user-attachments/assets/ad643996-ee03-4449-89ba-c82ca6527f41" />
+<img width="1440" height="900" alt="Screenshot 2026-04-06 at 14 05 47" src="https://github.com/user-attachments/assets/6f9e9a94-aed9-4c69-a157-3f96f10906f1" />
+<img width="1440" height="900" alt="Screenshot 2026-04-06 at 13 59 35" src="https://github.com/user-attachments/assets/05a107e3-7a7b-49e5-ae22-d45259f904e0" />
+<img width="1440" height="900" alt="Screenshot 2026-04-06 at 13 59 31" src="https://github.com/user-attachments/assets/98529681-bb03-401d-bb0e-bcbd911a0450" />
+<img width="1440" height="900" alt="Screenshot 2026-04-06 at 13 59 24" src="https://github.com/user-attachments/assets/9e151db3-a3ee-4c41-b8b0-985aa0425bc7" />
 
 The Job Tracker API is a robust backend service designed to manage job applications, providing functionalities for users to track their application process. It includes features for user authentication and secure data management, ensuring that job application data is organized and accessible.
 
