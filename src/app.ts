@@ -48,6 +48,10 @@ app.use((req: Request, res: Response) => {
   res.status(404).json(response)
 });
 
+import { errorHandler } from './middleware/error.middleware';
+
+app.use(errorHandler);
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
 })

@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { ApplicationService } from '../services/application.service';
 import { CreateApplicationDto, UpdateApplicationDto, Application } from '../types/application.types';
 import { ApiResult, AuthRequest } from '../types/api.types';
+import { catchAsync } from '../utils/catchAsync';
 
 const applicationService = new ApplicationService();
 
@@ -27,19 +28,13 @@ export class ApplicationController {
     }
   }
 
-  async getAll(req: AuthRequest, res: Response): Promise<void> {
-    try {
-      const userId = req.user!.id;
-      const applications: Application[] = await applicationService.getUserApplications(userId);
-      
-      const response: ApiResult<Application[]> = { success: true, data: applications, error: null };
-      res.status(200).json(response);
-    } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      const response: ApiResult<null> = { success: false, data: null, error: errorMessage };
-      res.status(400).json(response);
-    }
-  }
+  getAll = catchAsync(async (req: AuthRequest, res: Response) => {
+    const userId = req.user!.id;
+    const applications = await applicationService.getUserApplications(userId);
+    
+    const response: ApiResult<Application[]> = { success: true, data: applications, error: null };
+    res.status(200).json(response);
+  });
 
   async getById(req: AuthRequest, res: Response): Promise<void> {
     try {
