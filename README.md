@@ -1,183 +1,189 @@
-### Verify TypeScript works
+# Job Tracker API
 
-# Start your Express development server
+The Job Tracker API is a robust backend service designed to manage job applications, providing functionalities for users to track their application process. It includes features for user authentication and secure data management, ensuring that job application data is organized and accessible.
+
+## Table of Contents
+- [Project Description](#project-description)
+- [Features](#features)
+- [Technologies Used](#technologies-used)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Database Setup (Prisma)](#database-setup-prisma)
+  - [Running the Application](#running-the-application)
+    - [Locally](#locally)
+    - [Using Docker](#using-docker)
+    - [Using Docker Compose (for services)](#using-docker-compose-for-services)
+- [Authentication](#authentication)
+- [Troubleshooting](#troubleshooting)
+
+## Project Description
+
+The Job Tracker API facilitates the tracking and management of job applications. Users can create, view, update, and delete their job application records, including details such as company name, job title, application status, and notes. The API is secured with user authentication, ensuring that each user's data remains private and accessible only to them.
+
+## Features
+
+- **User Authentication:** Secure user registration, login, and session management using JWT.
+- **Job Application Management:** CRUD operations for job application records (create, read, update, delete).
+- **Relational Data:** Link job applications to specific users.
+
+## Technologies Used
+
+- **Backend:** Node.js, Express.js
+- **Database:** PostgreSQL (with Prisma ORM)
+- **Authentication:** JWT (JSON Web Tokens), Bcrypt (for password hashing)
+- **Containerization:** Docker, Docker Compose
+- **Language:** TypeScript
+- **Other:** Redis (for potential caching/session management)
+
+## Getting Started
+
+Follow these instructions to set up and run the Job Tracker API on your local machine.
+
+### Prerequisites
+
+Ensure you have the following installed:
+
+- **Node.js**: Version 20.x or later. You can download it from [nodejs.org](https://nodejs.org/).
+- **npm**: Comes with Node.js.
+- **PostgreSQL**: A running PostgreSQL instance is required for the database.
+- **Redis**: A running Redis instance is recommended (used by Docker Compose setup).
+- **Docker & Docker Compose**: (Optional) For running services or the application in containers.
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [repository-url]
+    cd job-tracker-api
+    ```
+    (Note: Replace `[repository-url]` with the actual repository URL)
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+### Database Setup (Prisma)
+
+The application uses Prisma as its ORM to interact with a PostgreSQL database.
+
+1.  **Ensure your `.env` file is configured with your PostgreSQL database URL.**
+    Example `.env` entry:
+    ```
+    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/jobtracker?schema=public"
+    ```
+
+2.  **Run database migrations:**
+    This command applies all pending migrations to your database, creating necessary tables.
+    ```bash
+    npx prisma migrate dev --name init_application
+    ```
+    *(Note: The `--name` flag is used for the initial migration. Subsequent migrations might use different names based on changes.)*
+
+3.  **Generate Prisma Client:**
+    ```bash
+    npx prisma generate
+    ```
+
+4.  **Seed the database (Optional):**
+    If you have a `prisma/seed.ts` file, you can populate your database with initial data.
+    ```bash
+    npx prisma db seed
+    ```
+    *(Troubleshooting seed script issues: Ensure `prisma.config.ts` has `seed: "ts-node prisma/seed.ts"` and `prisma/seed.ts` includes `import 'dotenv/config';` and imports the shared prisma singleton `import { prisma } from '../src/utils/prisma';`)*
+
+5.  **View the database (Optional):**
+    Open Prisma Studio to inspect and edit your database data in a browser.
+    ```bash
+    npx prisma studio
+    ```
+
+### Running the Application
+
+#### Locally
+
+To run the application directly using `ts-node`:
+
+```bash
 npx ts-node src/app.ts
-
-# From job-tracker-api directory type check
-npx tsc --version
-npx tsc --noEmit 
-
-# Verify folders exist
-ls -la src/
-
-## Database Setup (Prisma)
-
-1. **Install Prisma dependencies** 
-2. (run `npm install` after cloning):
-   ```bash
-   npm install prisma --save-dev
-   npm install @prisma/client
-
-3. Initialize Prisma (creates prisma/ folder and updates .env):
-4. ```bash
-   npx prisma init
-
-5. Run the migration to create the Application table:
-6. ```bash
-   npx prisma migrate dev --name init_application
-
-7. Generate the Prisma Client:
-   ```bash
-   npx prisma generate
-
-8. View the database (optional):
-9. ```bash
-   npx prisma studio
-
-Opens a browser at http://localhost:5555 to inspect and edit data.
-
------------
-
-# In short: utils/prisma.ts
-```bash
-Singleton = the code that makes sure you have exactly one PrismaClient (one pool manager).
-
-Pool = the internal team of messengers (managed by PrismaClient).
-
-Connection = a specific phone line (database session) that the pool opens when needed.
 ```
 
----
+The API will typically run on `http://localhost:5000` (or another port as configured in `src/app.ts` or environment variables).
 
-## 💡 Prisma Seed Script Troubleshooting
+#### Using Docker
 
-### Issue
+1.  **Build the Docker image:**
+    ```bash
+    docker build -t job-tracker-api .
+    ```
 
-The Prisma `seed.ts` script consistently failed to execute, presenting persistent `PrismaClientConstructorValidationError` errors. This issue prevented the database from being populated and stemmed from a misconfiguration or incompatibility when `ts-node` attempted to run the standalone seed script with Prisma v7.
+2.  **Run the Docker container:**
+    ```bash
+    docker run -p 5000:5000 job-tracker-api
+    ```
 
-### Solution
+    The application will be accessible via `http://localhost:5000`.
 
-The robust solution involved several key steps: using the official `npx prisma db seed` command with the seed script configured in `prisma.config.ts`, importing the shared `prisma` singleton from `src/utils/prisma`, and implementing the PostgreSQL driver adapter (`@prisma/adapter-pg`) for proper client initialization. Additionally, `import 'dotenv/config';` was added to the top of `prisma/seed.ts` to ensure environment variables were loaded correctly.
+#### Using Docker Compose (for services)
 
-### Command Solution
+You can use Docker Compose to spin up the PostgreSQL database and Redis instances. The application itself can then connect to these services.
 
-```bash
-npx prisma db seed
-```
+1.  **Start the database and Redis services:**
+    ```bash
+    docker-compose up -d postgres redis
+    ```
 
-### Code Solutions
+2.  **Connect your locally running application or Docker container to these services.** Ensure your `DATABASE_URL` and Redis connection strings in your `.env` file match the Docker Compose service configurations (e.g., `localhost:5432` for postgres, `localhost:6379` for redis).
 
-**1. `prisma.config.ts` modification:**
+<h2>Authentication</h2>
 
-```typescript
-  migrations: {
-    path: "prisma/migrations",
-    seed: "ts-node prisma/seed.ts", // Added this line
-  },
-```
+The API implements JWT-based authentication.
 
-**2. `prisma/seed.ts` modification:**
+-   **JWT Signing:** Uses `HS256` algorithm explicitly to prevent algorithmic
+    vulnerabilities.
+    *   **HS256:** HMAC (Hash-based Message Authentication Code) with SHA-256, using a shared secret.
 
-```typescript
-import 'dotenv/config'; // Added this line
-import { prisma } from '../src/utils/prisma'; // Replaced local PrismaClient instantiation
+-   **Password Hashing:** Passwords are securely hashed using `bcrypt`.
+    *   **One-way Hashing:** Passwords cannot be reversed from their hash.
+    *   **Salting:** Random data mixed with passwords before hashing ensures unique hashes for identical passwords.
+    *   **Cost Factor:** Controls hashing computational intensity, balancing security and performance (typically 10-12).
 
-async function main() {
-  await prisma.application.create({
-    data: {
-      companyName: "Spotify",
-      jobTitle: "Fullstack Developer",
-      jobUrl: "https://www.spotifyjobs.com/",
-      status: "Applied",
-      matchScore: 9,
-      notes: "Referral from Anders.",
-      dateApplied: new Date(),
+<h2>Troubleshooting</h2>
+
+<h3>Prisma Seed Script Failure</h3>
+
+**Issue:** Persistent `PrismaClientConstructorValidationError` when running `npx prisma db seed`. This often occurs due to misconfiguration or incompatibility when `ts-node` attempts to run the seed script with Prisma.
+
+**Solution:**
+1.  **Ensure `prisma.config.ts` is correctly configured:**
+    ```typescript
+    migrations: {
+      path: "prisma/migrations",
+      seed: "ts-node prisma/seed.ts", // This line is crucial
     },
-  });
-  console.log("Seed data created!");
-}
+    ```
+2.  **Verify `prisma/seed.ts`:**
+    *   Add `import 'dotenv/config';` at the top to load environment variables.
+    *   Import the shared Prisma singleton: `import { prisma } from '../src/utils/prisma';` (instead of instantiating a new PrismaClient locally).
+    *   If using a driver adapter (e.g., for PostgreSQL), ensure `src/utils/prisma.ts` correctly initializes `PrismaClient` with the adapter.
+
+<h3>Migration Errors (e.g., adding non-nullable column)</h3>
+
+**Issue:** When adding a new non-nullable column (e.g., `userId` to `Application`), existing records prevent the migration from applying directly.
+
+**Solution:** For development environments, resetting the database is often the quickest solution.
+```bash
+npx prisma migrate reset
 ```
+*(Caution: This command will delete all data in your database and re-run all migrations. Use with extreme care in non-development environments.)*
 
-**3. `src/utils/prisma.ts` modification:**
+<h3>General Prisma Connection Issues</h3>
 
-```typescript
-import { PrismaClient } from "@prisma/client";
-import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
+-   **`.env` file:** Double-check that `DATABASE_URL` is correctly set in your `.env` file and points to an accessible PostgreSQL instance.
+-   **Prisma Singleton:** The `src/utils/prisma.ts` file ensures a single `PrismaClient` instance (connection pool) is used throughout the application. The actual connection is established only when the first query is run.
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
-
-export const prisma = globalForPrisma.prisma || new PrismaClient({
-  adapter, // Added this line
-  log: ['query'],
-});
 ```
-
----
-
-## Authentication Infrastructure Foundation
-```bash
-**What happened:** I integrated a `User` model into our database schema and linked `Application` records to specific users. During this process, a migration error occurred because the new `userId` column in `Application` was mandatory, but existing records lacked this value.
-
-**What I did:** I had to reset the development database using `npx prisma migrate reset` to clear all existing data, which allowed the new `add_user_model` migration to be applied successfully. I also installed essential security libraries (`bcrypt`, `jsonwebtoken`) and updated TypeScript types (`src/types/user.types.ts`, `src/types/application.types.ts`) to reflect the new schema.
-
-**Why I did it:** Resetting the development database was necessary to resolve data conflicts and apply the new schema changes cleanly. These updates provide the foundational database structure and strict typing required for implementing robust authentication and ensuring that users can only access their own job applications, a critical security measure.
-
-
-
-***
-```bash
-When you call Jwt.sign(), you pass algorithm: 'HS256' to tell the library exactly which cryptographic method to use for signing the token.
-
-Why specify it explicitly?
-
-The library has a default (also HS256), but attackers could try to trick your server by sending a token claiming a different algorithm (e.g., none or RS256). If your server just uses the default, it might accidentally accept a malicious token.
-By forcing HS256, you eliminate that risk. You are saying: "I will only accept tokens signed with this specific algorithm."
-What does HS256 mean?
-
-HS = HMAC (Hash‑based Message Authentication Code) with a shared secret (the same string on both the server that creates the token and the server that verifies it).
-256 = SHA‑256, the hashing function used inside.
-In simple words: It’s like agreeing on a secret handshake and explicitly saying “this is the only handshake we use.” No one can trick you with a different handshake.
-
-
-
------------
-```bash
-- **Hashing is one‑way** – you cannot reverse a hash to get the original password.
-
-- **Salt** is random extra data mixed into the password before hashing, so the same password gives different hashes for different users.
-
-- The **cost factor** (10, 12, etc.) controls how slow the hashing is.
-
-- Higher cost = slower = harder for attackers to guess passwords, but also slower for your app. A good balance is usually 10–12.
-
---------
-
-```bash
-The process is:
-
-Generate a random salt (using bcrypt.genSalt(10)).
-Combine the plain password with the salt.
-Run the combined string through the bcrypt hashing algorithm (one‑way).
-The final stored hash includes the salt, cost factor, and the hash itself.
-So "add salt, then hash" is exactly right.
-
-
---------------------
-
-```bash
-Final simple summary:
-
-.env → DATABASE_URL = the address + login info
-Singleton file → creates one PrismaClient + one connection pool
-Repository file (this one) → just uses the prisma singleton to run queries
-Real connection → happens automatically inside the pool the first time any query runs
-
-----------------------------------------
-
 Full Flow (super simple): ⭐️⭐️⭐️
 
 .env file
@@ -192,3 +198,4 @@ Repository (your ApplicationRepository)
 
 When a ***route is called*** (e.g. POST /applications or GET /applications)
 → Repository runs a query → only then the real connection to the database is opened using the pool from the singleton.
+```
