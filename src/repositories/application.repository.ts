@@ -12,8 +12,8 @@ import { Application } from '@prisma/client';
 import { CreateApplicationDto, UpdateApplicationDto } from '../types/application.types';
 
 export class ApplicationRepository {
-
   async create(data: CreateApplicationDto): Promise<Application> {
+
     // ? This will use the shared connection pool inside the prisma singleton.
     // ? First time this runs → Prisma will open real connections to the database using DATABASE_URL.
     return prisma.application.create({
@@ -21,21 +21,31 @@ export class ApplicationRepository {
     });
   }
 
-  async findAll(): Promise<Application[]> {
+  // * Strictly scoped to the authenticated user
+  async findAllByUserId(userId: string): Promise<Application[]> {
     return prisma.application.findMany({
+      where: { userId },
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findById(id: string): Promise<Application | null> {
-    return prisma.application.findUnique({
-      where: { id },
+  // * Ensures we only find the app if it belongs to this specific user
+  async findByIdAndUserId(id: string, userId: string): Promise<Application | null> {
+    return prisma.application.findFirst({
+      where: { 
+        id,
+        userId 
+      },
     });
   }
 
-  async update(id: string, data: UpdateApplicationDto): Promise<Application> {
+  async update(id: string, userId: string, data: UpdateApplicationDto): Promise<Application> {
     return prisma.application.update({
-      where: { id },
+      where: { 
+        id,
+        // * Prisma requires a unique identifier for updates, but we also want to ensure ownership.
+        // * A safer pattern is to verify ownership in the service layer first, then update by ID.
+      },
       data,
     });
   }

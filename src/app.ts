@@ -1,14 +1,19 @@
+// ? This must be the VERY FIRST line in the entire application
+// ? It loads all environment variables (.env file) before any other code runs
+// ? This prevents DATABASE_URL from being undefined when the Prisma singleton is created
 require('dotenv').config();
+
 import express, { Request, Response, Application } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
 import { ApiResult } from './types/api.types'
 import authRoutes from './routes/auth.routes'
+import applicationRoutes from './routes/application.routes';
 
 const app: Application = express();
 const PORT = process.env.PORT || 5000;
 
-// Security and utility middleware
+// * Security and utility middleware
 app.use(helmet({
   contentSecurityPolicy: false,
 }));
@@ -16,6 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/applications', applicationRoutes);
 
 app.get('/health', (req: Request, res: Response) => {
   const response: ApiResult<{ status: string, timestamp: string, message: string}> = {
@@ -31,7 +37,7 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({response})
 });
 
-// 404 Fallback Handler
+// * 404 Fallback Handler
 app.use((req: Request, res: Response) => {
   const response: ApiResult<null> = {
     success: false,
