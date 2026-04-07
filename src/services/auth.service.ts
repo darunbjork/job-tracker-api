@@ -1,11 +1,24 @@
+// src/services/auth.service.ts
+// ? AuthService contains all business logic for authentication
+// ? It handles registration, login, token generation, refresh, and logout
+// ? No 'any' types are used - fully strict TypeScript compliant
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import * as crypto from 'crypto'; // Add this import
-import { prisma } from '../utils/prisma';
-import { RegisterDto, LoginDto, AuthResponse, User } from '../types/user.types';
+import * as crypto from 'crypto';
+import { prisma } from '../utils/prisma.js';
+import { RegisterDto, LoginDto, AuthResponse, User } from '../types/user.types.js';
 
 export class AuthService {
-  private mapToUserType(user: any): User {
+
+// * Safely maps Prisma user object to our clean User type (without password)
+  private mapToUserType(user: {
+    id: string;
+    email: string;
+    name: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }): User {
     return {
       id: user.id,
       email: user.email,
@@ -19,15 +32,22 @@ export class AuthService {
     const jwtSecret = process.env.JWT_SECRET;
     const refreshSecret = process.env.REFRESH_SECRET;
 
-    if (!jwtSecret) throw new Error('JWT_SECRET is not defined in environment variable');
-    if (!refreshSecret) throw new Error('REFRESH_SECRET is not defined in environment variable');
+    if (!jwtSecret) throw new Error('JWT_SECRET is not defined in environment variables');
+    if (!refreshSecret) throw new Error('REFRESH_SECRET is not defined in environment variables');
 
-     algorithm: 'HS256' // * // Explicitly "use HS256" – it's safer than letting the library guess
+    const accessToken = jwt.sign(
+      { id: userId },
+      jwtSecret,
+      { expiresIn: '15m', algorithm: 'HS256' }
+    );
 
-    const accessToken = jwt.sign({ id: userId }, jwtSecret, { expiresIn: '15m', algorithm: 'HS256' });
-    const refreshToken = jwt.sign({ id: userId, uuid: crypto.randomUUID() }, refreshSecret, { expiresIn: '7d', algorithm: 'HS256' });
+    const refreshToken = jwt.sign(
+      { id: userId, uuid: crypto.randomUUID() },
+      refreshSecret,
+      { expiresIn: '7d', algorithm: 'HS256' }
+    );
 
-    // Store refresh token in DB
+    // Store refresh token in database for later validation/rotation
     await prisma.refreshToken.create({
       data: {
         token: refreshToken,
@@ -40,20 +60,20 @@ export class AuthService {
   }
 
   async refreshAccessToken(oldRefreshToken: string) {
-    // 1. Verify token exists in DB
+    // 1. Verify token exists in DB and is not expired
     const tokenDoc = await prisma.refreshToken.findUnique({
       where: { token: oldRefreshToken },
-      include: { user: true }
+      include: { user: true },
     });
 
     if (!tokenDoc || tokenDoc.expiresAt < new Date()) {
       throw new Error('Invalid or expired refresh token');
     }
 
-    // 2. Delete old token (Rotation)
+    // 2. Delete old token (token rotation - security best practice)
     await prisma.refreshToken.delete({ where: { id: tokenDoc.id } });
 
-    // 3. Generate new pair
+    // 3. Generate new token pair
     return this.generateTokens(tokenDoc.userId);
   }
 
@@ -64,8 +84,11 @@ export class AuthService {
   }
 
   async register(data: RegisterDto): Promise<AuthResponse> {
-    const existingUser = await prisma.user.findUnique({ where: { email: data.email}});
-    if(existingUser) {
+    const existingUser = await prisma.user.findUnique({
+      where: { email: data.email }
+    });
+
+    if (existingUser) {
       throw new Error('User already exists with this email');
     }
 
@@ -76,7 +99,7 @@ export class AuthService {
       data: {
         email: data.email,
         name: data.name,
-        password: hashedPassword, 
+        password: hashedPassword,
       },
     });
 
@@ -86,18 +109,21 @@ export class AuthService {
     return {
       user: safeUser,
       accessToken,
-      refreshToken
+      refreshToken,
     };
   }
 
   async login(data: LoginDto): Promise<AuthResponse> {
-    const user = await prisma.user.findUnique({ where: { email: data.email } });
-    if(!user) {
+    const user = await prisma.user.findUnique({
+      where: { email: data.email }
+    });
+
+    if (!user) {
       throw new Error('Invalid email or password');
     }
 
     const isMatch = await bcrypt.compare(data.password, user.password);
-    if(!isMatch) {
+    if (!isMatch) {
       throw new Error('Invalid email or password');
     }
 
@@ -107,7 +133,7 @@ export class AuthService {
     return {
       user: safeUser,
       accessToken,
-      refreshToken
+      refreshToken,
     };
   }
 }
