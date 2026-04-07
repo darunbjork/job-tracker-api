@@ -9,7 +9,7 @@ import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
 
-// Middleware
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
