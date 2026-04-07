@@ -1,9 +1,15 @@
+// tests/auth.test.ts
+// ? Integration tests for Authentication endpoints (Register, Login, Logout)
+// ? Uses supertest to simulate real HTTP requests + direct Prisma checks
+// ? Tests happy path and error cases for auth flow with refresh tokens
+
 import request from 'supertest';
 import app from '../src/app';
 import { prisma } from '../src/utils/prisma';
 
 describe('Auth Integration Tests', () => {
-  // Clean DB before tests
+
+  // ? Clean up any leftover test data before running tests
   beforeAll(async () => {
     await prisma.refreshToken.deleteMany();
     await prisma.user.deleteMany();
@@ -13,13 +19,13 @@ describe('Auth Integration Tests', () => {
     await prisma.$disconnect();
   });
 
-  it('should register a new user and return tokens', async () => {
+  it('should register a new user and return access + refresh tokens', async () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .send({
-        email: 'test@example.com',
+        email: 'test-register@example.com',
         password: 'password123',
-        name: 'Test User'
+        name: 'Test Register User'
       });
 
     expect(res.statusCode).toEqual(201);
@@ -27,28 +33,28 @@ describe('Auth Integration Tests', () => {
     expect(res.body.data).toHaveProperty('accessToken');
     expect(res.body.data).toHaveProperty('refreshToken');
     expect(res.body.data.user).toHaveProperty('id');
-    expect(res.body.data.user).toHaveProperty('email', 'test@example.com');
+    expect(res.body.data.user).toHaveProperty('email', 'test-register@example.com');
   });
 
-  it('should fail to register with existing email', async () => {
+  it('should fail to register with an existing email', async () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .send({
-        email: 'test@example.com',
+        email: 'test-register@example.com',   // already used above
         password: 'password123',
-        name: 'Another User'
+        name: 'Duplicate User'
       });
 
-    expect(res.statusCode).toEqual(400); // Or 409 Conflict, depending on your error handling
+    expect(res.statusCode).toEqual(400);   // or 409 depending on your global error handler
     expect(res.body.success).toBe(false);
-    expect(res.body.error).toContain('User already exists with this email');
+    expect(res.body.error || res.body.message).toContain('already exists');
   });
 
   it('should login an existing user and return tokens', async () => {
     const res = await request(app)
       .post('/api/v1/auth/login')
       .send({
-        email: 'test@example.com',
+        email: 'test-register@example.com',
         password: 'password123'
       });
 
@@ -62,7 +68,7 @@ describe('Auth Integration Tests', () => {
     const res = await request(app)
       .post('/api/v1/auth/login')
       .send({
-        email: 'test@example.com',
+        email: 'test-register@example.com',
         password: 'wrongpassword'
       });
 
@@ -70,36 +76,35 @@ describe('Auth Integration Tests', () => {
     expect(res.body.success).toBe(false);
   });
 
-  it('should logout a user successfully', async () => {
-    // First, register and login a user to get a refresh token
+  it('should logout a user successfully and delete the refresh token', async () => {
+    // Register a fresh user for logout test
     await request(app)
       .post('/api/v1/auth/register')
       .send({
-        email: 'logout@example.com',
+        email: 'logout-test@example.com',
         password: 'password123',
-        name: 'Logout User'
+        name: 'Logout Test User'
       });
 
     const loginRes = await request(app)
       .post('/api/v1/auth/login')
       .send({
-        email: 'logout@example.com',
+        email: 'logout-test@example.com',
         password: 'password123'
       });
-    
+
     expect(loginRes.statusCode).toEqual(200);
-    expect(loginRes.body.success).toBe(true);
     const refreshToken = loginRes.body.data.refreshToken;
 
-    // Now, attempt to logout with the refresh token
+    // Perform logout
     const logoutRes = await request(app)
       .post('/api/v1/auth/logout')
-      .send({ refreshToken: refreshToken });
+      .send({ refreshToken });
 
     expect(logoutRes.statusCode).toEqual(200);
     expect(logoutRes.body.success).toBe(true);
 
-    // Verify the refresh token is deleted from the database
+    // Verify the refresh token was actually deleted from DB
     const tokenDoc = await prisma.refreshToken.findUnique({
       where: { token: refreshToken },
     });

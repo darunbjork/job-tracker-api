@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/server.ts",
+    "dev": "npm run prisma:generate && ts-node src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "test": "jest",
     "lint": "eslint . --ext .ts",
-    "docker:build": "docker build -t job-tracker-api ."
+    "docker:build": "docker build -t job-tracker-api .",
+    "prisma:generate:clean": "rm -rf node_modules/.prisma && prisma generate"
+  
   },
   "keywords": [],
   "author": "",

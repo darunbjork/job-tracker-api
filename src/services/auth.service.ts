@@ -22,8 +22,10 @@ export class AuthService {
     if (!jwtSecret) throw new Error('JWT_SECRET is not defined in environment variable');
     if (!refreshSecret) throw new Error('REFRESH_SECRET is not defined in environment variable');
 
-    const accessToken = jwt.sign({ id: userId }, jwtSecret, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ id: userId, uuid: crypto.randomUUID() }, refreshSecret, { expiresIn: '7d' });
+     algorithm: 'HS256' // * // Explicitly "use HS256" – it's safer than letting the library guess
+
+    const accessToken = jwt.sign({ id: userId }, jwtSecret, { expiresIn: '15m', algorithm: 'HS256' });
+    const refreshToken = jwt.sign({ id: userId, uuid: crypto.randomUUID() }, refreshSecret, { expiresIn: '7d', algorithm: 'HS256' });
 
     // Store refresh token in DB
     await prisma.refreshToken.create({
