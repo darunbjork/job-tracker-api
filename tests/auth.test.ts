@@ -69,4 +69,40 @@ describe('Auth Integration Tests', () => {
     expect(res.statusCode).toEqual(401);
     expect(res.body.success).toBe(false);
   });
+
+  it('should logout a user successfully', async () => {
+    // First, register and login a user to get a refresh token
+    await request(app)
+      .post('/api/v1/auth/register')
+      .send({
+        email: 'logout@example.com',
+        password: 'password123',
+        name: 'Logout User'
+      });
+
+    const loginRes = await request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: 'logout@example.com',
+        password: 'password123'
+      });
+    
+    expect(loginRes.statusCode).toEqual(200);
+    expect(loginRes.body.success).toBe(true);
+    const refreshToken = loginRes.body.data.refreshToken;
+
+    // Now, attempt to logout with the refresh token
+    const logoutRes = await request(app)
+      .post('/api/v1/auth/logout')
+      .send({ refreshToken: refreshToken });
+
+    expect(logoutRes.statusCode).toEqual(200);
+    expect(logoutRes.body.success).toBe(true);
+
+    // Verify the refresh token is deleted from the database
+    const tokenDoc = await prisma.refreshToken.findUnique({
+      where: { token: refreshToken },
+    });
+    expect(tokenDoc).toBeNull();
+  });
 });
