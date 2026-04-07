@@ -1,17 +1,19 @@
-/** @type {import('ts-jest').JestConfigWithTsJest} */
-// eslint-disable-next-line no-undef
 export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
-  },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'node'],
-  testMatch: ['<rootDir>/tests/**/*.test.ts'],
+  extensionsToTreatAsEsm: ['.ts'],
   transform: {
-    '^.+\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.json',
-    }],
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      { useESM: true },
+    ],
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  resolver: '<rootDir>/jest.resolver.cjs',
+  moduleFileExtensions: ['ts', 'js', 'json', 'node'],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.mjs'],
+  testPathIgnorePatterns: ['/dist/', '/node_modules/'],
+  testMatch: [
+    '**/__tests__/**/*.+(ts|js)',
+    '**/?(*.)+(spec|test).+(ts|js)',
+  ],
 };
