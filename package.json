@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "npm run prisma:generate && ts-node src/server.ts",
@@ -12,27 +13,30 @@
     "lint": "eslint . --ext .ts",
     "docker:build": "docker build -t job-tracker-api .",
     "prisma:generate:clean": "rm -rf node_modules/.prisma && prisma generate"
-  
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.3",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.5.2",
     "@types/supertest": "^7.2.0",
+    "eslint": "^10.2.0",
+    "eslint-plugin-jest": "^29.15.1",
     "jest": "^30.3.0",
     "prisma": "^7.6.0",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "typescript-eslint": "^8.58.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",
