@@ -43,7 +43,10 @@ export default [
     plugins: {
       jest, // Register the Jest plugin
     },
-    // Removed the languageOptions block with globals that used require().
-    // The plugin itself should provide necessary globals or rules.
+    languageOptions: { // Explicitly add Jest globals for test files
+      globals: {
+        ...require("jest").getSettings().globals,
+      },
+    },
   },
 ];

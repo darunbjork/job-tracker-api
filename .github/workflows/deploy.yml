@@ -13,6 +13,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env: # Set environment variables at the job level
+      DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
 
     steps:
       - name: Checkout code
@@ -28,16 +30,16 @@ jobs:
         run: npm ci
 
       # ? Generate Prisma Client before migrations and build
+      # This step will now have access to DATABASE_URL from the job env
       - name: Generate Prisma Client
         run: npm run prisma:generate
 
       # ? This is the most important step for production
       # ? It safely applies all pending Prisma migrations to your live database
       # ! Never use "prisma migrate dev" in production
+      # DATABASE_URL is inherited from the job env
       - name: Run Prisma Migrations (Production)
         run: npm run prisma:migrate:deploy
-        env:
-          DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
 
       - name: Build the app
         run: npm run build
