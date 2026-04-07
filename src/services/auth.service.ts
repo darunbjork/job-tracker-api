@@ -54,6 +54,15 @@ export class AuthService {
     return this.generateTokens(tokenDoc.userId);
   }
 
+    return { accessToken, refreshToken };
+  }
+
+  async logout(refreshToken: string): Promise<void> {
+    await prisma.refreshToken.deleteMany({
+      where: { token: refreshToken },
+    });
+  }
+
   async register(data: RegisterDto): Promise<AuthResponse> {
     const existingUser = await prisma.user.findUnique({ where: { email: data.email}});
     if(existingUser) {
