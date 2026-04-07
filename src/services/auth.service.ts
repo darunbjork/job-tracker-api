@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import * as crypto from 'crypto'; // Add this import
 import { prisma } from '../utils/prisma';
 import { RegisterDto, LoginDto, AuthResponse, User } from '../types/user.types';
 
@@ -22,7 +23,7 @@ export class AuthService {
     if (!refreshSecret) throw new Error('REFRESH_SECRET is not defined in environment variable');
 
     const accessToken = jwt.sign({ id: userId }, jwtSecret, { expiresIn: '15m' });
-    const refreshToken = jwt.sign({ id: userId }, refreshSecret, { expiresIn: '7d' });
+    const refreshToken = jwt.sign({ id: userId, uuid: crypto.randomUUID() }, refreshSecret, { expiresIn: '7d' });
 
     // Store refresh token in DB
     await prisma.refreshToken.create({
@@ -52,9 +53,6 @@ export class AuthService {
 
     // 3. Generate new pair
     return this.generateTokens(tokenDoc.userId);
-  }
-
-    return { accessToken, refreshToken };
   }
 
   async logout(refreshToken: string): Promise<void> {
