@@ -1,5 +1,6 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
+// eslint-disable-next-line no-undef
+export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
   moduleNameMapper: {
@@ -8,7 +9,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'json', 'node'],
   testMatch: ['<rootDir>/tests/**/*.test.ts'],
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
+    '^.+\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.json',
     }],
   },
