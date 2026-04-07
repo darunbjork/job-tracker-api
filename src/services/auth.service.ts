@@ -1,22 +1,10 @@
 import bcrypt from 'bcrypt';
-import Jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { prisma } from '../utils/prisma';
 import { RegisterDto, LoginDto, AuthResponse, User } from '../types/user.types';
 
 export class AuthService {
-  private generateToken(user: User): string {
-    const secret = process.env.JWT_SECRET;
-    if(!secret) throw new Error('JWT_SECRET is not defined in environment variable'); // ? if(!secret) throw new Error(...) // guard clause (or guard condition) //
-
-    // * creates a signed JSON Web Token (JWT) containing the payload
-    return Jwt.sign({ id: user.id, email: user.email }, secret, {
-      expiresIn: '30d',
-      algorithm: 'HS256' // * // Explicitly "use HS256" – it's safer than letting the library guess
-    });
-  }
-
- // * Prisma user includes password; our User type doesn't. So we use 'any' here to strip it safely.
-private mapToUserType(user: any): User {
+  private mapToUserType(user: any): User {
     return {
       id: user.id,
       email: user.email,
@@ -24,6 +12,46 @@ private mapToUserType(user: any): User {
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     };
+  }
+
+  async generateTokens(userId: string) {
+    const jwtSecret = process.env.JWT_SECRET;
+    const refreshSecret = process.env.REFRESH_SECRET;
+
+    if (!jwtSecret) throw new Error('JWT_SECRET is not defined in environment variable');
+    if (!refreshSecret) throw new Error('REFRESH_SECRET is not defined in environment variable');
+
+    const accessToken = jwt.sign({ id: userId }, jwtSecret, { expiresIn: '15m' });
+    const refreshToken = jwt.sign({ id: userId }, refreshSecret, { expiresIn: '7d' });
+
+    // Store refresh token in DB
+    await prisma.refreshToken.create({
+      data: {
+        token: refreshToken,
+        userId: userId,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      },
+    });
+
+    return { accessToken, refreshToken };
+  }
+
+  async refreshAccessToken(oldRefreshToken: string) {
+    // 1. Verify token exists in DB
+    const tokenDoc = await prisma.refreshToken.findUnique({
+      where: { token: oldRefreshToken },
+      include: { user: true }
+    });
+
+    if (!tokenDoc || tokenDoc.expiresAt < new Date()) {
+      throw new Error('Invalid or expired refresh token');
+    }
+
+    // 2. Delete old token (Rotation)
+    await prisma.refreshToken.delete({ where: { id: tokenDoc.id } });
+
+    // 3. Generate new pair
+    return this.generateTokens(tokenDoc.userId);
   }
 
   async register(data: RegisterDto): Promise<AuthResponse> {
@@ -43,10 +71,13 @@ private mapToUserType(user: any): User {
       },
     });
 
+    const { accessToken, refreshToken } = await this.generateTokens(newUser.id);
     const safeUser = this.mapToUserType(newUser);
+
     return {
       user: safeUser,
-      token: this.generateToken(safeUser),
+      accessToken,
+      refreshToken
     };
   }
 
@@ -61,10 +92,13 @@ private mapToUserType(user: any): User {
       throw new Error('Invalid email or password');
     }
 
+    const { accessToken, refreshToken } = await this.generateTokens(user.id);
     const safeUser = this.mapToUserType(user);
+
     return {
       user: safeUser,
-      token: this.generateToken(safeUser),
+      accessToken,
+      refreshToken
     };
   }
 }
