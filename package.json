@@ -4,13 +4,13 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run prisma:generate && ts-node src/server.ts",
+    "dev": "tsx src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "test": "jest",
-    "lint": "eslint . --ext .ts",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "lint": "eslint . --ext .ts --max-warnings=0",
     "docker:build": "docker build -t job-tracker-api .",
     "prisma:generate:clean": "rm -rf node_modules/.prisma && prisma generate"
   },
@@ -35,12 +35,13 @@
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^6.0.2",
     "typescript-eslint": "^8.58.0"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.6.0",
-    "@prisma/client": "^7.6.0",
+    "@prisma/client": "^7.7.0",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.0",

@@ -5,3 +5,10 @@
 {"level":"info","message":"🚀 Server running in development mode on port 5001","timestamp":"2026-04-07T12:44:00.142Z"}
 {"level":"info","message":"Shutting down server...","timestamp":"2026-04-07T14:13:31.557Z"}
 {"level":"info","message":"🚀 Server running in development mode on port 5001","timestamp":"2026-04-07T14:13:35.754Z"}
+{"level":"info","message":"Shutting down server...","timestamp":"2026-04-07T16:22:09.514Z"}
+{"level":"info","message":"🚀 Server running in development mode on port 5001","timestamp":"2026-04-07T18:12:56.371Z"}
+{"level":"info","message":"Shutting down server...","timestamp":"2026-04-07T19:03:52.379Z"}
+{"level":"info","message":"DATABASE_URL seen by application: ✓ Loaded","timestamp":"2026-04-07T19:03:57.755Z"}
+{"level":"info","message":"🚀 Server running in development mode on port 5001","timestamp":"2026-04-07T19:03:57.826Z"}
+{"level":"info","message":"DATABASE_URL seen by application: ✓ Loaded","timestamp":"2026-04-07T20:15:21.260Z"}
+{"level":"info","message":"DATABASE_URL seen by application: ✓ Loaded","timestamp":"2026-04-07T20:18:47.602Z"}

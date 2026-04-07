@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { ApiResult } from '../types/api.types';
-import logger from '../utils/logger';
+import { ApiResult } from '../types/api.types.js';
+import logger from '../utils/logger.js';
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;

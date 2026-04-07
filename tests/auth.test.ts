@@ -4,8 +4,8 @@
 // ? Tests happy path and error cases for auth flow with refresh tokens
 
 import request from 'supertest';
-import app from '../src/app';
-import { prisma } from '../src/utils/prisma';
+import app from '../src/app.js';
+import { prisma, shutdownPrisma } from '../src/utils/prisma.js';
 
 describe('Auth Integration Tests', () => {
 
@@ -16,7 +16,7 @@ describe('Auth Integration Tests', () => {
   });
 
   afterAll(async () => {
-    await prisma.$disconnect();
+      await shutdownPrisma();
   });
 
   it('should register a new user and return access + refresh tokens', async () => {

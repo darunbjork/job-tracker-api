@@ -1,10 +1,10 @@
 // ✅ 1. Load environment variables BEFORE any other imports
-require('dotenv').config();
+import 'dotenv/config';
 
 // ✅ 2. Import app and utilities (now safe to use process.env)
-import app from './app';
-import { prisma } from './utils/prisma';
-import logger from './utils/logger';
+import app from './app.js';
+import { prisma } from './utils/prisma.js';
+import logger from './utils/logger.js';
 
 const PORT = process.env.PORT || 5000;
 
