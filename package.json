@@ -5,13 +5,13 @@
 
   "scripts": {
     "dev": "ts-node src/server.ts",
-    "build": "tsc",                   
+    "build": "tsc",
     "start": "node dist/server.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "test": "jest",                  
+    "test": "jest",
     "lint": "eslint . --ext .ts",
-    "docker:build": "docker build -t digital-library-api ."
+    "docker:build": "docker build -t job-tracker-api ."
   },
 
   "keywords": [],
