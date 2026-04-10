@@ -2,10 +2,10 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import { ApiResult } from './types/api.types';
-import applicationRoutes from './routes/application.routes';
-import authRoutes from './routes/auth.routes';
-import { errorHandler } from './middleware/error.middleware';
+import { ApiResult } from './types/api.types.js';
+import applicationRoutes from './routes/application.routes.js';
+import authRoutes from './routes/auth.routes.js';
+import { errorHandler } from './middleware/error.middleware.js';
 
 const app = express();
 
