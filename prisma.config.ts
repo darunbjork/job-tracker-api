@@ -8,7 +8,10 @@ export default defineConfig({
     path: "prisma/migrations",
     seed: "ts-node prisma/seed.ts",
   },
-  datasource: {
-    url: env("PRODUCTION_DATABASE_URL"),
+ datasources: {
+    db: {
+      kind: "postgres",
+      url: process.env.PRODUCTION_DATABASE_URL,
+    },
   },
 });
