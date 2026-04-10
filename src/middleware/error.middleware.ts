@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { ApiResult } from '../types/api.types.js';
 import logger from '../utils/logger.js';
 
-export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   
   // ✅ Log the error to our file system via Winston
