@@ -1,17 +1,16 @@
-// @ts-nocheck
-import "dotenv/config";
-import { defineConfig, env } from "prisma/config";
+// prisma.config.ts
+/// <reference types="node" />
 
-export default defineConfig({
+import "dotenv/config";
+
+export default {
   schema: "prisma/schema.prisma",
+
   migrations: {
     path: "prisma/migrations",
-    seed: "ts-node prisma/seed.ts",
   },
- datasources: {
-    db: {
-      kind: "postgres",
-      url: process.env.PRODUCTION_DATABASE_URL,
-    },
+
+  datasource: {
+    url: process.env.DATABASE_URL,
   },
-});
+};

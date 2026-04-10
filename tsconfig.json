@@ -9,7 +9,6 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
-    "isolatedModules": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "types": ["jest", "node"]

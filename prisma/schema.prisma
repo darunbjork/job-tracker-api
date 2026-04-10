@@ -1,21 +1,22 @@
+// prisma/schema.prisma
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["driverAdapters"] // Required for the pg adapter configured!
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  // url is intentionally omitted here - it's provided via prisma.config.ts
 }
 
 model User {
-  id           String         @id @default(uuid())
-  email        String         @unique
-  password     String
-  name         String
-  applications Application[]
-  refreshTokens RefreshToken[] 
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id            String         @id @default(uuid())
+  email         String         @unique
+  password      String
+  name          String
+  applications  Application[]
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model RefreshToken {
@@ -36,23 +37,22 @@ enum AppStatus {
 }
 
 model Application {
-  id              String    @id @default(cuid())
+  id              String     @id @default(cuid())
   companyName     String
   jobTitle        String
   jobUrl          String
-  status          AppStatus @default(Bookmarked)  // "Bookmarked" | "Applied" | "Interview" | "Offer" | "Rejected"
-  dateApplied     DateTime  @default(now())
+  status          AppStatus  @default(Bookmarked)
+  dateApplied     DateTime   @default(now())
   contactName     String?
   contactLinkedIn String?
   notes           String?
   followUpDate    DateTime?
   salaryRange     String?
-  matchScore      Int  //1-10
-  userId          String  // New Relational Fields
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  matchScore      Int
+  userId          String
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
-  @@map("Application") // Ensures Prisma maps to the existing table name
+  @@map("Application")
 }
-
