@@ -1,8 +1,8 @@
 import { Response } from 'express';
-import { ApplicationService } from '../services/application.service';
-import { CreateApplicationDto, UpdateApplicationDto, Application } from '../types/application.types';
-import { ApiResult, AuthRequest } from '../types/api.types';
-import { catchAsync } from '../utils/catchAsync';
+import { ApplicationService } from '../services/application.service.js';
+import { CreateApplicationDto, UpdateApplicationDto, Application } from '../types/application.types.js';
+import { ApiResult, AuthRequest } from '../types/api.types.js';
+import { catchAsync } from '../utils/catchAsync.js';
 
 const applicationService = new ApplicationService();
 
