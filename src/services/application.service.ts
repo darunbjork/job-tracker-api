@@ -1,5 +1,5 @@
-import { ApplicationRepository } from '../repositories/application.repository';
-import { Application, CreateApplicationDto, UpdateApplicationDto } from '../types/application.types';
+import { ApplicationRepository } from '../repositories/application.repository.js';
+import { Application, CreateApplicationDto, UpdateApplicationDto } from '../types/application.types.js';
 
 export class ApplicationService {
   private repository: ApplicationRepository;
