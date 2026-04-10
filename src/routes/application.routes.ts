@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { ApplicationController } from '../controllers/application.controller';
-import { protect } from '../middleware/auth.middleware';
-import { validate } from '../middleware/validate.middleware';
-import { createApplicationSchema } from '../validations/application.validation';
+import { ApplicationController } from '../controllers/application.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+import { validate } from '../middleware/validate.middleware.js';
+import { createApplicationSchema } from '../validations/application.validation.js';
 
 const router = Router();
 const applicationController = new ApplicationController();
