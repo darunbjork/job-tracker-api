@@ -1,6 +1,6 @@
 // @ts-nocheck
 import "dotenv/config";
-import { defineConfig } from "prisma/config";
+import { defineConfig } from "@prisma/client/generator";
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
@@ -12,4 +12,3 @@ export default defineConfig({
     url: process.env["PRODUCTION_DATABASE_URL"],
   },
 });
-                                                                    
