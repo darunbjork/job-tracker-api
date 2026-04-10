@@ -7,9 +7,9 @@
 
 // * We import the singleton prisma instance. This is the same single instance used
 // * everywhere in the app, which prevents creating too many connection pools.
-import { prisma } from '../utils/prisma';
+import { prisma } from '../utils/prisma.js';
 import { Application } from '@prisma/client';
-import { CreateApplicationDto, UpdateApplicationDto } from '../types/application.types';
+import { CreateApplicationDto, UpdateApplicationDto } from '../types/application.types.js';
 
 export class ApplicationRepository {
   async create(data: CreateApplicationDto): Promise<Application> {

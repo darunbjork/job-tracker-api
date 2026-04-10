@@ -1,7 +1,7 @@
 // * TData = "Whatever type you need for this specific API call"
 
 import { Request } from "express";
-import { User } from './user.types'
+import { User } from './user.types.js'
 export interface ApiResult<TData> {
   success: boolean;
   data: TData | null;

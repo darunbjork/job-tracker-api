@@ -31,8 +31,8 @@ export interface GeminiResponse {
 export interface JobBotContext {
   totalApplications: number;
   byStatus: Record<string, number>;
-  overdueFollowUps: import("./application.types").Application[];
-  topMatchScores: import("./application.types").Application[];
-  recentApplications: import("./application.types").Application[];
+  overdueFollowUps: import("./application.types.js").Application[];
+  topMatchScores: import("./application.types.js").Application[];
+  recentApplications: import("./application.types.js").Application[];
   conversionRate: string;
 }
