@@ -15,7 +15,7 @@ jobs:
 
     # ? Set PRODUCTION_DATABASE_URL at the job level so all steps can access it
     env:
-      DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
+      PRODUCTION_DATABASE_URL: ${{ secrets.PRODUCTION_DATABASE_URL }}
 
     steps:
       - name: Checkout code
