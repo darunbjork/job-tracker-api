@@ -7,7 +7,7 @@
 
 //* Import the Prisma Client constructor from the Prisma package.
 //* This is what we use to talk to our database.
-import logger from './logger';
+import logger from './logger.js';
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
